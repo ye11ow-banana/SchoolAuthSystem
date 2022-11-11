@@ -1,4 +1,11 @@
 .idea/
-venv/
+.DS_Store
+migrations/
 __pycache__/
+media/
+locale/
+venv/
+setenv.sh
 .mypy_cache/
+local_settings.py
+.coverage

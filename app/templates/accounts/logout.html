@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Logout Page</title>
+</head>
+<body>
+    <form action="{% url 'accounts:logout' %}" method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <button>Logout</button>
+    </form>
+</body>
+</html>

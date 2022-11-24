@@ -8,7 +8,7 @@
     <form action="{% url 'accounts:logout' %}" method="POST">
         {% csrf_token %}
         {{ form }}
-        <button>Logout</button>
+        <button>Log out</button>
     </form>
 </body>
 </html>

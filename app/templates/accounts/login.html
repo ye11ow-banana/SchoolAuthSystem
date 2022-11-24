@@ -8,7 +8,11 @@
     <form action="{% url 'accounts:login' %}" method="POST">
         {% csrf_token %}
         {{ form }}
-        <button>Login</button>
+        <button>Log in</button>
     </form>
+    <p>New here?</p>
+    <a href="{% url 'accounts:registration' %}">
+        Let's create an account for you
+    </a>
 </body>
 </html>

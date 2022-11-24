@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Login Page</title>
+  <meta charset="UTF-8">
+  <title>Login Page</title>
 </head>
 <body>
-    <form action="{% url 'accounts:login' %}" method="POST">
-        {% csrf_token %}
-        {{ form }}
-        <button>Log in</button>
-    </form>
-    <p>New here?</p>
-    <a href="{% url 'accounts:registration' %}">
-        Let's create an account for you
-    </a>
+  {% for message in messages %}
+    {{ message }}
+  {% endfor %}
+  <form action="{% url 'accounts:login' %}" method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <button>Log in</button>
+  </form>
+  <p>New here?</p>
+  <a href="{% url 'accounts:registration' %}">
+    Let's create an account for you
+  </a>
 </body>
 </html>

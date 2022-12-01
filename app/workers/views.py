@@ -1,3 +1,19 @@
-from django.shortcuts import render
+from django.views.generic import DetailView, ListView
 
-# Create your views here.
+from workers.models import WorkerList
+
+
+class WorkerListsView(ListView):
+    model = WorkerList
+    context_object_name = 'worker_lists'
+    template_name = 'workers/worker_lists.html'
+
+
+class WorkerListView(DetailView):
+    model = WorkerList
+    context_object_name = 'worker_list'
+    template_name = 'workers/worker_list.html'
+
+
+worker_lists_view = WorkerListsView.as_view()
+worker_list_view = WorkerListView.as_view()

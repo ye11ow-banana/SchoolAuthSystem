@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timedelta
 
 from django.db import models
+from django.urls import reverse
 
 
 class WorkerList(models.Model):
@@ -27,6 +28,9 @@ class WorkerList(models.Model):
 
     def __str__(self) -> str:
         return str(self.title)
+
+    def get_absolute_url(self) -> str:
+        return reverse('workers:worker_list', args=[self.pk], current_app='workers')
 
     @staticmethod
     def generate_token() -> str:

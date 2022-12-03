@@ -35,7 +35,6 @@ login_view = LoginView.as_view(
     redirect_authenticated_user=True
 )
 logout_view = LogoutView.as_view(
-    template_name='accounts/logout.html',
     next_page='accounts:login'
 )
 registration_view = RegistrationView.as_view()

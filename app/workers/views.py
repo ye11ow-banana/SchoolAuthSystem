@@ -5,6 +5,7 @@ from workers.models import WorkerList
 
 class WorkerListsView(ListView):
     model = WorkerList
+    paginate_by = 4
     context_object_name = 'worker_lists'
     template_name = 'workers/worker_lists.html'
 

@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Worker Lists</title>
-</head>
-<body>
-  {% for worker_list in worker_lists %}
-    <p><a href="{{ worker_list.get_absolute_url }}">
-      {{ worker_list.title }}
-    </a></p>
+{% extends 'base.html' %}
+
+{% block title %}Worker Lists{% endblock %}
+
+{% block content %}
+  {% for worker_list in page_obj %}
+    <p><a href="{{ worker_list.get_absolute_url }}">{{ worker_list.title }}</a></p>
   {% endfor %}
-</body>
-</html>
+
+  {% include 'include/pagination.html' %}
+{% endblock %}

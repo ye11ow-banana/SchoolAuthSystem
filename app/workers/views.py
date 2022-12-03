@@ -1,5 +1,6 @@
 from django.db.models import QuerySet
-from django.views.generic import DetailView, ListView
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, ListView, DeleteView
 
 from workers.models import WorkerList
 
@@ -39,3 +40,7 @@ class WorkerListsSearchView(WorkerListsView):
 worker_lists_view = WorkerListsView.as_view()
 worker_list_view = WorkerListView.as_view()
 worker_lists_search_view = WorkerListsSearchView.as_view()
+worker_list_delete_view = DeleteView.as_view(
+    model=WorkerList,
+    success_url=reverse_lazy('workers:worker_lists')
+)

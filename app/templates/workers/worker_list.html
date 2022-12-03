@@ -3,5 +3,10 @@
 {% block title %}Worker List{% endblock %}
 
 {% block content %}
+  <form action="{{ request.path }}delete/" method="POST">
+    {% csrf_token %}
+    <button>Delete Worker List</button>
+  </form>
+
   <div>{{ worker_list.title }}</div>
 {% endblock %}

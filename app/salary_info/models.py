@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 
@@ -33,17 +35,44 @@ class SalaryHistory(models.Model):
 
 
 class AbstractWorkerSalaryInfo(models.Model):
+    """
+    Abstract class for all salary supplements classes.
+    """
     class Meta:
         abstract = True
-
-    def __str__(self) -> str:
-        return f'Salary info of {self.pk} pk'
 
     def calculate_salary(self):
         raise NotImplementedError('Calculate salary for regular worker!')
 
 
-class TeacherSalaryInfo(AbstractWorkerSalaryInfo):
+class WorkerSalaryInfo(AbstractWorkerSalaryInfo):
+    """
+    Salary supplements for regular Worker.
+    """
+    title = models.CharField('Title', max_length=255)
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, null=True, blank=True,
+        verbose_name='Salary info extension. Like salary info about a teacher or a cook. '
+                     'Leave blank if this is salary info for a regular employee'
+    )
+    object_id = models.PositiveIntegerField(
+        'Id of extension type. E.g. id of `TeacherTypeSalaryInfo`', null=True, blank=True)
+    extension_type = GenericForeignKey()
+
+    class Meta:
+        db_table = 'worker_salary_info'
+        verbose_name = 'worker salary info'
+        verbose_name_plural = 'worker salary infos'
+        unique_together = 'content_type', 'object_id'
+
+    def __str__(self) -> str:
+        return f'Salary info: {self.title}'
+
+    def calculate_salary(self):
+        raise NotImplementedError
+
+
+class TeacherTypeSalaryInfo(AbstractWorkerSalaryInfo):
     """
     Salary supplements for Teacher type.
     """
@@ -80,6 +109,7 @@ class TeacherSalaryInfo(AbstractWorkerSalaryInfo):
             'for checking notebooks',
             default=12
         )
+    worker_salary_info = GenericRelation(WorkerSalaryInfo)
 
     class Meta:
         db_table = 'teacher_salary_info'
@@ -90,25 +120,13 @@ class TeacherSalaryInfo(AbstractWorkerSalaryInfo):
         raise NotImplementedError
 
 
-class SecurityGuardSalaryInfo(AbstractWorkerSalaryInfo):
-    """
-    Salary supplements for SecurityGuard type.
-    """
-    class Meta:
-        db_table = 'security_guard_salary_info'
-        verbose_name = 'security guard salary info'
-        verbose_name_plural = 'security guard salary infos'
-
-    def calculate_salary(self):
-        raise NotImplementedError
-
-
-class CookSalaryInfo(AbstractWorkerSalaryInfo):
+class CookTypeSalaryInfo(AbstractWorkerSalaryInfo):
     """
     Salary supplements for Cook type.
     """
     chief_increase = models.PositiveSmallIntegerField(
         'Salary increase for chief cook', default=2000)
+    worker_salary_info = GenericRelation(WorkerSalaryInfo)
 
     class Meta:
         db_table = 'cook_salary_info'

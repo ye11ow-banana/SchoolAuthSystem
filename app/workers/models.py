@@ -2,6 +2,9 @@ import binascii
 import os
 from datetime import datetime, timedelta
 
+from django.conf.global_settings import AUTH_USER_MODEL
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 
@@ -16,10 +19,11 @@ class WorkerList(models.Model):
     title = models.CharField(
         'Title of worker list', default='My Worker List', max_length=255)
     token = models.CharField(
-        'Access token to worker list', max_length=40, null=True)
+        'Access token to worker list', max_length=40, null=True, blank=True)
     token_expiration_date = models.DateTimeField(
-        'Expiration date of token', default=datetime.now() + timedelta(hours=3))
-    creation_date = models.DateField('Creation date', auto_now_add=True)
+        'Expiration date of token', default=datetime.now() + timedelta(hours=3), blank=True)
+    creation_date = models.DateField('Creation date', auto_now_add=True, blank=True)
+    users = models.ManyToManyField(AUTH_USER_MODEL, verbose_name='')
 
     class Meta:
         db_table = 'worker_list'
@@ -37,19 +41,18 @@ class WorkerList(models.Model):
         return binascii.hexlify(os.urandom(20)).decode()
 
 
-class AbstractWorker(models.Model):
+class Worker(models.Model):
     """
     School employee.
 
-    Worker has common fields for all types. There are many types
-    of worker. For example, teacher or cook.
-    They have some special fields for their classes.
+    An ordinary employee who has no additional fields,
+    except for those common to everyone.
+    For example, a security guard. He has a name and an age.
+
+    There are also regular employee extensions (`extension_type`).
+    For example, a `TeacherType` model. Teacher may have his own class,
+    as well as a list of subjects he teaches.
     """
-    JOB_TITLE = (
-        ('teacher', 'teacher'),
-        ('cook', 'cook'),
-        ('security', 'security')
-    )
     STATUS = (
         ('active', 'active'),
         ('time_off', 'time off'),
@@ -66,7 +69,7 @@ class AbstractWorker(models.Model):
     worker_list = models.ForeignKey(
         WorkerList, on_delete=models.CASCADE, verbose_name='Worker list')
     add_date = models.DateField('Date of first creating', auto_now_add=True)
-    title = models.CharField('Job title', choices=JOB_TITLE, max_length=50)
+    job_title = models.CharField('Job title', max_length=255)
     status = models.CharField(
         'Working status', choices=STATUS,
         default='active', max_length=50
@@ -80,28 +83,40 @@ class AbstractWorker(models.Model):
     wage_rate_salary = models.PositiveIntegerField(
         'Salary for one job', default=6000
     )
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, null=True, blank=True,
+        verbose_name='Worker extension. Like a teacher or a cook. '
+                     'Leave blank if this is a regular employee'
+    )
+    object_id = models.PositiveIntegerField(
+        'Id of extension type. E.g. id of `TeacherType`', null=True, blank=True)
+    extension_type = GenericForeignKey()
+    salary_info = models.ForeignKey(
+        'salary_info.WorkerSalaryInfo', on_delete=models.DO_NOTHING,
+        verbose_name='Model with fields for salary calculation'
+    )
 
     class Meta:
-        abstract = True
+        db_table = 'worker'
+        verbose_name = 'worker'
+        verbose_name_plural = 'workers'
+        unique_together = 'content_type', 'object_id'
 
     def __str__(self) -> str:
         return f'{self.first_name} {self.last_name}'
 
 
-class Teacher(AbstractWorker):
+class TeacherType(models.Model):
     """
-    Worker type that teaches students at school.
+    Extension type of worker that teaches students at school.
     """
-    salary_info = models.ForeignKey(
-        'salary_info.TeacherSalaryInfo', on_delete=models.CASCADE,
-        verbose_name='Model with fields for salary calculation'
-    )
     completed_courses = models.PositiveSmallIntegerField(
         'Number of advanced training courses completed', default=0)
     has_classroom = models.BooleanField(
         'Teacher has classroom', default=False)
     subjects = models.ManyToManyField(
-        'students.Subject', related_name='Subjects')
+        'students.Subject', verbose_name='Subjects')
+    worker = GenericRelation(Worker)
 
     class Meta:
         db_table = 'teacher'
@@ -109,30 +124,12 @@ class Teacher(AbstractWorker):
         verbose_name_plural = 'teachers'
 
 
-class SecurityGuard(AbstractWorker):
+class CookType(models.Model):
     """
-    Worker type that keeps an eye on security at school.
+    Extension type of worker that cooks food at school.
     """
-    salary_info = models.ForeignKey(
-        'salary_info.SecurityGuardSalaryInfo', on_delete=models.CASCADE,
-        verbose_name='Model with fields for salary calculation'
-    )
-
-    class Meta:
-        db_table = 'security_guard'
-        verbose_name = 'security guard'
-        verbose_name_plural = 'security guards'
-
-
-class Cook(AbstractWorker):
-    """
-    Worker type that cooks food at school.
-    """
-    salary_info = models.ForeignKey(
-        'salary_info.CookSalaryInfo', on_delete=models.CASCADE,
-        verbose_name='Model with fields for salary calculation'
-    )
     is_chief = models.BooleanField('Is chief cook', default=False)
+    worker = GenericRelation(Worker)
 
     class Meta:
         db_table = 'cook'

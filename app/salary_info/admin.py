@@ -1,8 +1,8 @@
 from django.contrib import admin
 
 from salary_info.models import (
-    SalaryHistory, TeacherSalaryInfo,
-    SecurityGuardSalaryInfo, CookSalaryInfo
+    SalaryHistory, WorkerSalaryInfo,
+    TeacherTypeSalaryInfo, CookTypeSalaryInfo
 )
 
 
@@ -18,8 +18,19 @@ class SalaryHistoryAdmin(admin.ModelAdmin):
     save_as = True
 
 
-@admin.register(TeacherSalaryInfo)
-class TeacherSalaryInfoAdmin(admin.ModelAdmin):
+@admin.register(WorkerSalaryInfo)
+class WorkerSalaryInfoAdmin(admin.ModelAdmin):
+    list_display = 'title', 'content_type', 'object_id', 'extension_type'
+    list_display_links = 'title',
+    search_fields = 'title',
+    fields = 'title', 'content_type', 'object_id', 'extension_type'
+    readonly_fields = 'extension_type',
+    save_on_top = True
+    save_as = True
+
+
+@admin.register(TeacherTypeSalaryInfo)
+class TeacherTypeSalaryInfoAdmin(admin.ModelAdmin):
     list_display = (
         'course_increase', 'service_years', 'service_years_increase',
         'classroom_increase', 'seniors_group_increase',
@@ -30,14 +41,8 @@ class TeacherSalaryInfoAdmin(admin.ModelAdmin):
     save_as = True
 
 
-@admin.register(SecurityGuardSalaryInfo)
-class SecurityGuardSalaryInfoAdmin(admin.ModelAdmin):
-    save_on_top = True
-    save_as = True
-
-
-@admin.register(CookSalaryInfo)
-class CookSalaryInfoAdmin(admin.ModelAdmin):
+@admin.register(CookTypeSalaryInfo)
+class CookTypeSalaryInfoAdmin(admin.ModelAdmin):
     list_display = 'chief_increase',
     save_on_top = True
     save_as = True

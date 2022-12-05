@@ -8,5 +8,10 @@
     <button>Delete Worker List</button>
   </form>
 
+  <form action="{{ request.path }}" method="POST">
+    {% include 'include/post_form_content.html' %}
+    <button>Save changes</button>
+  </form>
+
   <div>{{ worker_list.title }}</div>
 {% endblock %}

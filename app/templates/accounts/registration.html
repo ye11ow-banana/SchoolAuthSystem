@@ -4,14 +4,7 @@
 
 {% block content %}
   <form action="{% url 'accounts:registration' %}" method="POST">
-    {% csrf_token %}
-    {% for field in form %}
-      <p>{{ field.label }}</p>
-      {% if field.errors %}
-        <h4 style="color: darkred">{{ field.errors }}</h4>
-      {% endif %}
-      <p>{{ field }}</p>
-    {% endfor %}
+    {% include 'include/post_form_content.html' %}
     <button>Create</button>
   </form>
   <p>Already have an account?</p>

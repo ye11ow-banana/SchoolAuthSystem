@@ -1,7 +1,9 @@
 from django.db.models import QuerySet
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView, DeleteView
+from django.views.generic import ListView, DeleteView, UpdateView
+from django.views.generic.detail import SingleObjectMixin
 
+from workers.forms import WorkerListForm
 from workers.models import WorkerList
 
 
@@ -15,13 +17,28 @@ class WorkerListsView(ListView):
     template_name = 'workers/worker_lists.html'
 
 
-class WorkerListView(DetailView):
+class WorkerListView(UpdateView, SingleObjectMixin):
     """
-    View for Worker List page.
+    View for Worker List Detail page.
+    Contains workers of Worker List.
     """
     model = WorkerList
     context_object_name = 'worker_list'
     template_name = 'workers/worker_list.html'
+    form_class = WorkerListForm
+    object = None
+
+    def get_context_data(self, **kwargs) -> dict:
+        self.object = self.get_object()
+        return super().get_context_data(**kwargs)
+
+    def get_success_url(self) -> str:
+        return self.request.path
+
+    def get_form_kwargs(self) -> dict:
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'instance': self.object})
+        return kwargs
 
 
 class WorkerListsSearchView(WorkerListsView):

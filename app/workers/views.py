@@ -1,10 +1,9 @@
 from django.db.models import QuerySet
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DeleteView, UpdateView
-from django.views.generic.detail import SingleObjectMixin
+from django.views.generic import ListView, DeleteView, UpdateView, DetailView
 
 from workers.forms import WorkerListForm
-from workers.models import WorkerList
+from workers.models import WorkerList, Worker
 
 
 class WorkerListsView(ListView):
@@ -17,7 +16,7 @@ class WorkerListsView(ListView):
     template_name = 'workers/worker_lists.html'
 
 
-class WorkerListView(UpdateView, SingleObjectMixin):
+class WorkerListView(DetailView):
     """
     View for Worker List Detail page.
     Contains workers of Worker List.
@@ -26,19 +25,12 @@ class WorkerListView(UpdateView, SingleObjectMixin):
     context_object_name = 'worker_list'
     template_name = 'workers/worker_list.html'
     form_class = WorkerListForm
-    object = None
 
     def get_context_data(self, **kwargs) -> dict:
-        self.object = self.get_object()
+        worker_list = self.get_object()
+        kwargs['workers'] = worker_list.worker_set.all()
+        kwargs['form'] = self.form_class(instance=worker_list)
         return super().get_context_data(**kwargs)
-
-    def get_success_url(self) -> str:
-        return self.request.path
-
-    def get_form_kwargs(self) -> dict:
-        kwargs = super().get_form_kwargs()
-        kwargs.update({'instance': self.object})
-        return kwargs
 
 
 class WorkerListsSearchView(WorkerListsView):
@@ -48,10 +40,21 @@ class WorkerListsSearchView(WorkerListsView):
     def get_queryset(self) -> QuerySet:
         return self.model.objects.filter(title__icontains=self.request.GET['q'])
 
-    def get_context_data(self, *args, **kwargs) -> dict:
-        context = super().get_context_data(*args, **kwargs)
-        context['q'] = f'q={self.request.GET["q"]}&'
-        return context
+    def get_context_data(self, **kwargs) -> dict:
+        kwargs['q'] = f'q={self.request.GET["q"]}&'
+        return super().get_context_data(**kwargs)
+
+
+class WorkerListUpdateView(UpdateView, WorkerListView):
+    """
+    Updating `WorkerList` model on Worker List Detail page.
+    """
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        return context | dict(form=self.get_form())
+
+    def get_success_url(self) -> str:
+        return self.get_object().get_absolute_url()
 
 
 worker_lists_view = WorkerListsView.as_view()
@@ -61,3 +64,4 @@ worker_list_delete_view = DeleteView.as_view(
     model=WorkerList,
     success_url=reverse_lazy('workers:worker_lists')
 )
+worker_list_update_view = WorkerListUpdateView.as_view()

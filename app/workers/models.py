@@ -67,7 +67,9 @@ class Worker(models.Model):
     last_name = models.CharField('Last name', max_length=50)
     birth_date = models.DateField('Birth date')
     worker_list = models.ForeignKey(
-        WorkerList, on_delete=models.CASCADE, verbose_name='Worker list')
+        WorkerList, on_delete=models.CASCADE,
+        verbose_name='Worker list', related_name='workers'
+    )
     add_date = models.DateField('Date of first creating', auto_now_add=True)
     job_title = models.CharField('Job title', max_length=255)
     status = models.CharField(

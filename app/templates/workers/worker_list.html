@@ -13,9 +13,17 @@
   </form>
 
   <div>{{ worker_list.title }}</div>
+  <form action="{% url 'workers:workers_search' worker_list.pk %}" method="GET">
+    <input type="search" placeholder="Enter Info About Worker..." name="q">
+    <button>Search</button>
+  </form>
   <ul>
     {% for worker in workers %}
-      <li>{{ worker.first_name }}</li>
+      <li>
+        <div>{{ worker.first_name }}</div>
+        <div>{{ worker.middle_name }}</div>
+        <div>{{ worker.last_name }}</div>
+      </li>
     {% endfor %}
   </ul>
 {% endblock %}

@@ -1,9 +1,12 @@
 from django.db.models import QuerySet
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DeleteView, UpdateView, DetailView
+from django.views.generic import (
+    ListView, DeleteView, UpdateView,
+    DetailView, CreateView
+)
 
 from workers.forms import WorkerListForm
-from workers.models import WorkerList, Worker
+from workers.models import WorkerList
 
 
 class WorkerListsView(ListView):
@@ -57,6 +60,18 @@ class WorkerListUpdateView(UpdateView, WorkerListView):
         return self.get_object().get_absolute_url()
 
 
+class WorkerListCreateView(CreateView):
+    """
+    View for Worker List creating page.
+    """
+    model = WorkerList
+    template_name = 'workers/worker_list_creation.html'
+    form_class = WorkerListForm
+
+    def get_success_url(self) -> str:
+        return self.object.get_absolute_url()
+
+
 worker_lists_view = WorkerListsView.as_view()
 worker_list_view = WorkerListView.as_view()
 worker_lists_search_view = WorkerListsSearchView.as_view()
@@ -65,3 +80,4 @@ worker_list_delete_view = DeleteView.as_view(
     success_url=reverse_lazy('workers:worker_lists')
 )
 worker_list_update_view = WorkerListUpdateView.as_view()
+worker_list_create_view = WorkerListCreateView.as_view()

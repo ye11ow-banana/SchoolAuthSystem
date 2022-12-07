@@ -3,6 +3,8 @@
 {% block title %}Worker Lists{% endblock %}
 
 {% block content %}
+  <a href="{% url 'workers:worker_list_create' %}">Create Worker List</a>
+
   <form action="{% url 'workers:worker_lists_search' %}" method="GET">
     <input type="search" placeholder="Enter Worker List title..." name="q">
     <button>Search</button>

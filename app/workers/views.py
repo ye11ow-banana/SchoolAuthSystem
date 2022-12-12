@@ -7,7 +7,7 @@ from django.views.generic import (
 
 from workers.forms import WorkerListForm
 from workers.models import WorkerList
-from workers.services import WorkerListService, WorkerService
+from workers.services import SearchService
 
 
 class WorkerListsView(ListView):
@@ -46,7 +46,8 @@ class WorkerListsSearchView(WorkerListsView):
     Search on Worker Lists page.
     """
     def get_queryset(self) -> QuerySet:
-        return WorkerListService().search(data=self.request.GET['q'])
+        search_service = SearchService(WorkerList.objects)
+        return search_service.search_by_title(self.request.GET['q'])
 
     def get_context_data(self, **kwargs) -> dict:
         kwargs['q'] = f'q={self.request.GET["q"]}&'
@@ -82,8 +83,8 @@ class WorkersSearchView(WorkerListView):
     Workers search on Worker List page.
     """
     def _get_workers_queryset(self) -> QuerySet:
-        worker_service = WorkerService(self.object)
-        return worker_service.search(data=self.request.GET['q'])
+        search_service = SearchService(self.object.workers)
+        return search_service.search_by_full_name(self.request.GET['q'])
 
     def get_context_data(self, **kwargs) -> dict:
         kwargs['q'] = f'q={self.request.GET["q"]}&'

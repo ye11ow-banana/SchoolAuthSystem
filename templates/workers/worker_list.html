@@ -33,7 +33,7 @@
     <button>Filter</button>
   </form>
   <ul>
-    {% for worker in workers %}
+    {% for worker in page_obj %}
       <li>
         <div>{{ worker.first_name }}</div>
         <div>{{ worker.middle_name }}</div>
@@ -41,4 +41,6 @@
       </li>
     {% endfor %}
   </ul>
+
+  {% include 'include/pagination.html' %}
 {% endblock %}

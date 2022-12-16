@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.db.models import QuerySet
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -29,16 +30,24 @@ class WorkerListView(DetailView):
     context_object_name = 'worker_list'
     template_name = 'workers/worker_list.html'
     form_class = WorkerListForm
+    paginate_by = 4
     object = None
+
+    def get_context_data(self, **kwargs) -> dict:
+        self.object = self.get_object()
+        kwargs['page_obj'] = self._get_paginated_workers()
+        kwargs['form'] = self.form_class(instance=self.object)
+        return super().get_context_data(**kwargs)
+
+    def _get_paginated_workers(self) -> QuerySet:
+        return self._paginate(self._get_workers_queryset())
 
     def _get_workers_queryset(self) -> QuerySet:
         return self.object.workers.all()
 
-    def get_context_data(self, **kwargs) -> dict:
-        self.object = self.get_object()
-        kwargs['workers'] = self._get_workers_queryset()
-        kwargs['form'] = self.form_class(instance=self.object)
-        return super().get_context_data(**kwargs)
+    def _paginate(self, queryset: QuerySet) -> QuerySet:
+        paginator = Paginator(queryset, self.paginate_by)
+        return paginator.get_page(self.request.GET.get('page'))
 
 
 class WorkerListsSearchView(WorkerListsView):
@@ -82,19 +91,23 @@ class WorkersSearchView(WorkerListView):
     """
     Workers search on Worker List page.
     """
-    def _get_workers_queryset(self) -> QuerySet:
-        search_service = SearchService(self.object.workers)
-        return search_service.search_by_full_name(self.request.GET['q'])
-
     def get_context_data(self, **kwargs) -> dict:
         kwargs['q'] = f'q={self.request.GET["q"]}&'
         return super().get_context_data(**kwargs)
+
+    def _get_workers_queryset(self) -> QuerySet:
+        search_service = SearchService(self.object.workers)
+        return search_service.search_by_full_name(self.request.GET['q'])
 
 
 class WorkersFilterView(WorkerListView):
     """
     Workers filter on Worker List page.
     """
+    def get_context_data(self, **kwargs) -> dict:
+        kwargs['status'] = f'status={self.request.GET["status"]}&'
+        return super().get_context_data(**kwargs)
+
     def _get_workers_queryset(self) -> QuerySet:
         search_input = self.request.GET.getlist('status')
         search_service = SearchService(self.object.workers)

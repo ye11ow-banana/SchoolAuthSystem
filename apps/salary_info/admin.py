@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from salary_info.models import (
+from .models import (
     SalaryHistory, WorkerSalaryInfo,
     TeacherTypeSalaryInfo, CookTypeSalaryInfo
 )

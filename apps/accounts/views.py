@@ -4,7 +4,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, CreateView
 
-from accounts.forms import RegistrationForm
+from .forms import RegistrationForm
 
 
 class HomeView(TemplateView):

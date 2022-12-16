@@ -6,9 +6,9 @@ from django.views.generic import (
     DetailView, CreateView
 )
 
-from workers.forms import WorkerListForm
-from workers.models import WorkerList
-from workers.services import SearchService
+from .forms import WorkerListForm
+from .models import WorkerList
+from .services import SearchService
 
 
 class WorkerListsView(ListView):

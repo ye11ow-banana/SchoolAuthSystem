@@ -1,6 +1,6 @@
 from django import forms
 
-from workers.models import WorkerList
+from .models import WorkerList
 
 
 class WorkerListForm(forms.ModelForm):

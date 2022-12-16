@@ -91,6 +91,16 @@ class WorkersSearchView(WorkerListView):
         return super().get_context_data(**kwargs)
 
 
+class WorkersFilterView(WorkerListView):
+    """
+    Workers filter on Worker List page.
+    """
+    def _get_workers_queryset(self) -> QuerySet:
+        search_input = self.request.GET.getlist('status')
+        search_service = SearchService(self.object.workers)
+        return search_service.filter_by_status(search_input)
+
+
 worker_lists_view = WorkerListsView.as_view()
 worker_list_view = WorkerListView.as_view()
 worker_lists_search_view = WorkerListsSearchView.as_view()
@@ -101,3 +111,4 @@ worker_list_delete_view = DeleteView.as_view(
 worker_list_update_view = WorkerListUpdateView.as_view()
 worker_list_create_view = WorkerListCreateView.as_view()
 workers_search_view = WorkersSearchView.as_view()
+workers_filter_view = WorkersFilterView.as_view()

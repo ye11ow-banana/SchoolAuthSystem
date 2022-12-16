@@ -20,3 +20,6 @@ class SearchService:
 
     def search_by_title(self, search_input: str) -> QuerySet:
         return self._model_manager.filter(title__icontains=search_input)
+
+    def filter_by_status(self, search_input: str) -> QuerySet:
+        return self._model_manager.filter(status__in=search_input)

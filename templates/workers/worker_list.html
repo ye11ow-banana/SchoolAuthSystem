@@ -17,6 +17,21 @@
     <input type="search" placeholder="Enter Info About Worker..." name="q">
     <button>Search</button>
   </form>
+  <form action="{% url 'workers:workers_filter' worker_list.pk %}" method="GET">
+    <span>active</span>
+    <input type="checkbox" name="status" value="active">
+    <span>time off</span>
+    <input type="checkbox" name="status" value="time_off">
+    <span>vacation</span>
+    <input type="checkbox" name="status" value="vacation">
+    <span>overtime</span>
+    <input type="checkbox" name="status" value="overtime">
+    <span>sick</span>
+    <input type="checkbox" name="status" value="sick">
+    <span>decree</span>
+    <input type="checkbox" name="status" value="decree">
+    <button>Filter</button>
+  </form>
   <ul>
     {% for worker in workers %}
       <li>

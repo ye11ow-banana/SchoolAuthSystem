@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}Subject Creation{% endblock %}
+
+{% block content %}
+  <form action="{{ request.path }}" method="POST">
+    {% include 'include/post_form_content.html' %}
+    <button>Create</button>
+  </form>
+{% endblock %}

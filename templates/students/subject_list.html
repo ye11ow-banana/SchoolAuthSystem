@@ -3,9 +3,12 @@
 {% block title %}Subject List{% endblock %}
 
 {% block content %}
+  <a href="{% url 'students:subject_create' %}">Create subject</a>
   {% for subject in subjects %}
-    <a href="{% url 'students:subject_detail' subject.pk %}">
-      {{ subject.title }}
-    </a>
+    <p>
+      <a href="{% url 'students:subject_detail' subject.pk %}">
+        {{ subject.title }}
+      </a>
+    </p>
   {% endfor %}
 {% endblock %}

@@ -3,5 +3,9 @@
 {% block title %}Subject Detail{% endblock %}
 
 {% block content %}
-  {{ subject.title }}
+  <a href="{% url 'students:subject_update' subject.pk %}"></a>
+  <h1>{{ subject.title }}</h1>
+  <form action="{% url 'students:subject_delete' subject.pk %}">
+    <button>Delete</button>
+  </form>
 {% endblock %}

@@ -23,7 +23,7 @@ class WorkerList(models.Model):
     token_expiration_date = models.DateTimeField(
         'Expiration date of token', default=datetime.now() + timedelta(hours=3), blank=True)
     creation_date = models.DateField('Creation date', auto_now_add=True, blank=True)
-    users = models.ManyToManyField(AUTH_USER_MODEL, verbose_name='')
+    owners = models.ManyToManyField(AUTH_USER_MODEL, verbose_name='owners')
 
     class Meta:
         db_table = 'worker_list'

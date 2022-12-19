@@ -1,4 +1,5 @@
 from django.conf.global_settings import AUTH_USER_MODEL
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 
@@ -31,6 +32,6 @@ class Subject(models.Model):
             current_app='students'
         )
 
-    def add_new_creator(self, creator: str) -> None:
+    def add_new_creator(self, creator: User) -> None:
         self.creator = creator
         self.save()
